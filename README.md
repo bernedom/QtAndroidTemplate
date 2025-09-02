@@ -25,9 +25,7 @@ QtAndroidTemplate is a starter project for building cross-platform Qt applicatio
 ### Getting Started
 
 Clone the repository and use CMake and Conan to configure and build the project. See the provided `CMakeLists.txt` and `conanfile.txt` for example usage and dependencies.
-# QRLite
-An android app to make collages from pictures - No internet connection required, no ads.
+# Example Application
 
-This repository serves as a template for creating Qt applications for Android. Use it as a starting point to build and deploy your own Qt-based Android apps quickly and efficiently.
-
+There is a small application called QRLite that does nothing except display a white screen
 ## Features
