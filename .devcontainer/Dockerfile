@@ -43,6 +43,7 @@ RUN apt-get update && apt-get install -y \
     libwayland-egl1 \
     locales \
     clang-format \
+    clangd \
     gdb
 
 
@@ -102,7 +103,7 @@ RUN aqt install-qt \
     --autodesktop \
     --outputdir /opt/Qt 
 
-    
+
 # create and user builder:builder
 RUN groupadd -r builder && useradd --create-home --gid builder --shell /bin/bash builder && mkdir -p /etc/sudoers.d && echo 'builder ALL=NOPASSWD: ALL' > /etc/sudoers.d/builder
 RUN usermod -aG video builder
