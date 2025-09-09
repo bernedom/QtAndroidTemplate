@@ -41,6 +41,7 @@ RUN apt-get update && apt-get install -y \
     libxcb-icccm4-dev \
     libwayland-cursor0 \
     libwayland-egl1 \
+    dotnet-sdk-8.0 \
     locales \
     clang-format \
     clangd \
