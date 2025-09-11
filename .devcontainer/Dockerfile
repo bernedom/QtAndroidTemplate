@@ -1,6 +1,5 @@
 FROM ubuntu:22.04
 
-ARG IMAGE_VERSION=0.0.1
 ARG ANDROID_API_LEVEL=33
 # https://developer.android.com/studio/releases/build-tools
 ARG ANDROID_BUILD_TOOLS_LEVEL=33.0.2
@@ -27,9 +26,9 @@ RUN apt-get update && apt-get install -y \
     vim \
     git \
     python3-pip \
+    bash-completion \
     wget \
     ccache \
-    bash-completion \
     libgl1-mesa-dev \
     libxcb-xkb-dev \
     libxkbcommon-dev \
@@ -62,11 +61,9 @@ RUN unzip -q -d /opt/android/cmdline-tools /tmp/commandlinetools-${ANDROID_CMD_L
 # Download gradle, install gradle and gradlew
 RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp
 RUN unzip -q -d /opt/gradle /tmp/gradle-${GRADLE_VERSION}-bin.zip
-RUN mkdir /opt/gradlew
-RUN touch /opt/gradlew/settings.gradle
+RUN mkdir /opt/gradlew && touch /opt/gradlew/settings.gradle
 RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper --gradle-version ${GRADLE_VERSION} --distribution-type all -p /opt/gradlew
 RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper -p /opt/gradlew
-
 
 # install packages and accept all licenses
 # cmdline-tools/cmdline-tools - the second "cmdline-tools" is the folder in the zip file
@@ -80,15 +77,13 @@ ENV GRADLE_HOME=/opt/gradle/gradle-$GRADLE_VERSION
 ENV ANDROID_HOME=/opt/android
 ENV ANDROID_NDK_HOME=${ANDROID_HOME}/ndk/${ANDROID_NDK_VERSION}
 
-RUN apt-get install -y python3-pip bash-completion
-
 RUN pip install -U pip && pip install aqtinstall conan cmake-format
 
 RUN aqt install-qt \
     linux android \
     6.6.1 \
     android_armv7 \
-    -m all \
+    -m qtmultimedia \
     --autodesktop \
     --outputdir /opt/Qt 
 
@@ -96,7 +91,7 @@ RUN aqt install-qt \
     linux android \
     6.6.1 \
     android_arm64_v8a\
-    -m all \
+    -m qtmultimedia \
     --autodesktop \
     --outputdir /opt/Qt 
 
@@ -104,7 +99,7 @@ RUN aqt install-qt \
     linux android \
     6.6.1 \
     android_x86_64\
-    -m all \
+    -m qtmultimedia \
     --autodesktop \
     --outputdir /opt/Qt 
 
@@ -114,7 +109,7 @@ RUN aqt install-qt \
     linux desktop \
     6.6.1 \
     gcc_64\
-    -m all \
+    -m qtmultimedia \
     --outputdir /opt/Qt
 
 
