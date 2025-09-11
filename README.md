@@ -28,4 +28,9 @@ Clone the repository and use CMake and Conan to configure and build the project.
 # Example Application
 
 There is a small application called QRLite that does nothing except display a white screen
-## Features
+
+## Building the devcontainer
+
+The devcontainer is available on dockerhub: https://hub.docker.com/repository/docker/bernedom/qtandroidbuilder/general
+
+

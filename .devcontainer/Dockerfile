@@ -87,6 +87,7 @@ RUN aqt install-qt \
     linux android \
     6.6.1 \
     android_armv7 \
+    -m all \
     --autodesktop \
     --outputdir /opt/Qt 
 
@@ -94,6 +95,7 @@ RUN aqt install-qt \
     linux android \
     6.6.1 \
     android_arm64_v8a\
+    -m all \
     --autodesktop \
     --outputdir /opt/Qt 
 
@@ -101,8 +103,18 @@ RUN aqt install-qt \
     linux android \
     6.6.1 \
     android_x86_64\
+    -m all \
     --autodesktop \
     --outputdir /opt/Qt 
+
+# Autodesktop does not install all the modules
+# the desktop version needs to be installed explicitly with all modules
+RUN aqt install-qt \
+    linux desktop \
+    6.6.1 \
+    gcc_64\
+    -m all \
+    --outputdir /opt/Qt
 
 
 # create and user builder:builder
