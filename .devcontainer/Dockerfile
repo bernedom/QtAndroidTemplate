@@ -42,6 +42,7 @@ RUN apt-get update && apt-get install -y \
     libwayland-cursor0 \
     libwayland-egl1 \
     dotnet-sdk-8.0 \
+    pulseaudio \
     locales \
     clang-format \
     clangd \
