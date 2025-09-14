@@ -33,4 +33,10 @@ There is a small application called QRLite that does nothing except display a wh
 
 The devcontainer is available on dockerhub: https://hub.docker.com/repository/docker/bernedom/qtandroidbuilder/general
 
+To build it yourself use docker buildx
+
+```bash
+cd .devcontainer
+docker buildx build -t bernedom/qtandroidbuilder:dev
+```
 

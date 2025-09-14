@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ARG ANDROID_API_LEVEL=33
 # https://developer.android.com/studio/releases/build-tools
@@ -77,7 +77,8 @@ ENV GRADLE_HOME=/opt/gradle/gradle-$GRADLE_VERSION
 ENV ANDROID_HOME=/opt/android
 ENV ANDROID_NDK_HOME=${ANDROID_HOME}/ndk/${ANDROID_NDK_VERSION}
 
-RUN pip install -U pip && pip install aqtinstall conan cmake-format
+# overwrite any system installed packages with pip installed packages
+RUN pip install --break-system-packages aqtinstall conan cmake-format
 
 RUN aqt install-qt \
     linux android \
@@ -113,6 +114,8 @@ RUN aqt install-qt \
     --outputdir /opt/Qt
 
 
+# the docker image for ubuntu 24.04 comes with a user "ubuntu", we remove it to not break compatibility with earlier versions
+RUN userdel -r ubuntu
 # create and user builder:builder
 RUN groupadd -r builder && useradd --create-home --gid builder --shell /bin/bash builder && mkdir -p /etc/sudoers.d && echo 'builder ALL=NOPASSWD: ALL' > /etc/sudoers.d/builder
 RUN usermod -aG video builder
