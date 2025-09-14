@@ -2,11 +2,12 @@ FROM ubuntu:24.04
 
 ARG ANDROID_API_LEVEL=33
 # https://developer.android.com/studio/releases/build-tools
-ARG ANDROID_BUILD_TOOLS_LEVEL=33.0.2
+ARG ANDROID_BUILD_TOOLS_LEVEL=34.0.0
 # https://developer.android.com/ndk/downloads
-ARG ANDROID_NDK_VERSION=27.0.12077973
+# using the latest LTS version
+ARG ANDROID_NDK_VERSION=27.3.13750724
 # https://developer.android.com/studio#command-tools (At the bottom)
-ARG ANDROID_CMD_LINE_TOOLS=linux-11076708_latest
+ARG ANDROID_CMD_LINE_TOOLS=linux-13114758_latest
 ARG CMAKE_VERSION=3.30.2
 ARG GRADLE_VERSION=8.10
 ENV LANGUAGE=en_US.UTF-8
