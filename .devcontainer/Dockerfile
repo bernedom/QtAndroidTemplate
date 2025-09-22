@@ -138,3 +138,4 @@ COPY ./create_android_profile.sh /home/builder/create_android_profile.sh
 RUN /home/builder/create_android_profile.sh
 
 USER root
+RUN conan profile detect && /home/builder/create_android_profile.sh
