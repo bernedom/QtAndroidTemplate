@@ -31,7 +31,7 @@ jobs:
             - name: Build and push Docker container
               uses: docker/build-push-action@v6
               with:
-                  context: ./devcontainer
+                  context: .
                   file: .devcontainer/Dockerfile
                   push: true
                   tags: |
