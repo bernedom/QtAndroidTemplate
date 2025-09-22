@@ -77,6 +77,7 @@ RUN rm /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip
 ENV GRADLE_HOME=/opt/gradle/gradle-$GRADLE_VERSION
 ENV ANDROID_HOME=/opt/android
 ENV ANDROID_NDK_HOME=${ANDROID_HOME}/ndk/${ANDROID_NDK_VERSION}
+ENV ANDROID_API_LEVEL=${ANDROID_API_LEVEL}
 
 # overwrite any system installed packages with pip installed packages
 RUN pip install --break-system-packages aqtinstall conan cmake-format
@@ -128,3 +129,12 @@ RUN echo 'export PATH="/opt/Qt/6.6.1/gcc_64/bin/:$PATH"' >> /home/builder/.profi
 RUN curl -L https://raw.github.com/git/git/master/contrib/completion/git-prompt.sh > /home/builder/.bash_git && echo "source ~/.bash_git" >> /home/builder/.bashrc
 RUN sed -Ei 's/(PS1=.*)(\\\[\\033\[00m\\\]\\\$.*)/\1\\[\\033[01;33m\\]$(__git_ps1)\2/p' /home/builder/.bashrc
 RUN chown builder:builder /home/builder/.bash_git /home/builder/.bashrc
+
+USER builder
+# Create the profiles for conan for user builder
+
+RUN conan profile new default --detect
+COPY create_android_profile.sh /home/builder/create_android_profile.sh
+RUN chmod +x /home/builder/create_android_profile.sh && /home/builder/create_android_profile.sh
+
+USER root

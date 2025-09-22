@@ -40,3 +40,8 @@ cd .devcontainer
 docker buildx build -t bernedom/qtandroidbuilder:dev
 ```
 
+# Technical Details
+
+The project is set up to use CMake for configuring the build system and Conan for managing dependencies. The `CMakeLists.txt` file includes configurations for both Android and desktop builds, with platform-specific settings and options.
+
+In the devcontainer, the Android SDK and NDK are pre-installed, along with necessary environment variables set for building Android applications. The Conan profile is also configured for cross-compiling to Android.
