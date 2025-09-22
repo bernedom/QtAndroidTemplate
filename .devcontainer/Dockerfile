@@ -133,7 +133,7 @@ RUN chown builder:builder /home/builder/.bash_git /home/builder/.bashrc
 USER builder
 # Create the profiles for conan for user builder
 
-RUN conan profile new default --detect
+RUN conan profile detect
 COPY ./create_android_profile.sh /home/builder/create_android_profile.sh
 RUN chmod +x /home/builder/create_android_profile.sh && /home/builder/create_android_profile.sh
 
