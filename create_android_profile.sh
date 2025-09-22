@@ -27,4 +27,11 @@ echo "compiler.version=$ANDROID_CLANG_MAJOR_VERSION" >> "$PROFILE_FILE"
 sed -i '/^compiler.libcxx[ =]/d' "$PROFILE_FILE"
 echo "compiler.libcxx=libstdc++11" >> "$PROFILE_FILE"
 
-cat $PROFILE_FILE
+for variant in release debug; do
+
+    VARIANT_PROFILE="$HOME/.conan2/profiles/android-$variant"
+    echo "Creating variant profile: $VARIANT_PROFILE"
+    cp "$PROFILE_FILE" "$VARIANT_PROFILE"
+    sed -i '/^build_type[ =]/d' "$VARIANT_PROFILE"
+    echo "build_type=$(echo $variant | tr '[:lower:]' '[:upper:]')" >> "$VARIANT_PROFILE"
+done
