@@ -33,5 +33,6 @@ for variant in release debug; do
     echo "Creating variant profile: $VARIANT_PROFILE"
     cp "$PROFILE_FILE" "$VARIANT_PROFILE"
     sed -i '/^build_type[ =]/d' "$VARIANT_PROFILE"
-    echo "build_type=$(echo $variant | tr '[:lower:]' '[:upper:]')" >> "$VARIANT_PROFILE"
+    build_type="$(echo ${variant:0:1} | tr '[:lower:]' '[:upper:]')${variant:1}"
+    echo "build_type=$build_type" >> "$VARIANT_PROFILE"
 done
