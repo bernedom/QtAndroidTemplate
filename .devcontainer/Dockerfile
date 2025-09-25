@@ -123,7 +123,7 @@ RUN groupadd -r builder && useradd --create-home --gid builder --shell /bin/bash
 RUN usermod -aG video builder
 
 # Add /opt/Qt/6.6.1/gcc_64/bin/ to the PATH environment variable in the .profile rc
-RUN echo 'export PATH="/opt/Qt/6.6.1/gcc_64/bin/:$PATH"' >> /home/builder/.profile
+RUN echo 'export PATH="/opt/android/cmdline-tools/cmdline-tools:/opt/Qt/6.6.1/gcc_64/bin/:$PATH"' >> /home/builder/.profile
 
 # Install git shell extension
 RUN curl -L https://raw.github.com/git/git/master/contrib/completion/git-prompt.sh > /home/builder/.bash_git && echo "source ~/.bash_git" >> /home/builder/.bashrc
