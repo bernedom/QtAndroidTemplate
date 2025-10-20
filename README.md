@@ -25,6 +25,7 @@ QtAndroidTemplate is a starter project for building cross-platform Qt applicatio
 ### Getting Started
 
 Clone the repository and use CMake and Conan to configure and build the project. See the provided `CMakeLists.txt` and `conanfile.txt` for example usage and dependencies.
+
 # Example Application
 
 There is a small application called QRLite that does nothing except display a white screen
@@ -44,4 +45,4 @@ docker buildx build -t bernedom/qtandroidbuilder:dev
 
 The project is set up to use CMake for configuring the build system and Conan for managing dependencies. The `CMakeLists.txt` file includes configurations for both Android and desktop builds, with platform-specific settings and options.
 
-In the devcontainer, the Android SDK and NDK are pre-installed, along with necessary environment variables set for building Android applications. The Conan profile is also configured for cross-compiling to Android.
+In the devcontainer, the Android SDK and NDK are pre-installed, along with necessary environment variables set for building Android applications. The Conan profile is also configured for cross-compiling to Android. The default profile is detected so the host toolchain using gcc is the default, because if this is not done and the first build is an android build the android toolchain becomes the default. If you want to change it, edit the ~/.conan/profiles/default file inside the container.
