@@ -46,7 +46,8 @@ RUN apt-get update && apt-get install -y \
     locales \
     clang-format \
     clangd \
-    gdb
+    gdb \
+    apksigner
 
 
 # install latest cmake
