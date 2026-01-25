@@ -1,27 +1,21 @@
 
 
-FROM ubuntu:24.04 AS downloader 
+FROM ubuntu:24.04 AS buildtools_downloader 
 
 ARG CMAKE_VERSION=3.30.2
-# https://developer.android.com/studio#command-tools (At the bottom)
-ARG ANDROID_CMD_LINE_TOOLS=linux-13114758_latest
 
 ARG GRADLE_VERSION=8.10
 
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
-RUN apt-get update && apt-get install -y curl unzip wget openjdk-17-jdk 
+RUN apt-get update && apt-get install -y unzip wget openjdk-17-jdk 
 
 # install latest cmake
 RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
     && chmod +x ./cmake-${CMAKE_VERSION}-linux-x86_64.sh \
     && ./cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/usr/local 
 
-# Download android commandlinetools
-RUN mkdir -p /opt/android
-RUN curl -o /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip -L https://dl.google.com/android/repository/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip 
-RUN unzip -q -d /opt/android/cmdline-tools /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip
 
 # Download gradle, install gradle and gradlew
 RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp
@@ -30,9 +24,33 @@ RUN mkdir /opt/gradlew && touch /opt/gradlew/settings.gradle
 RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper --gradle-version ${GRADLE_VERSION} --distribution-type all -p /opt/gradlew
 RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper -p /opt/gradlew
 
+FROM ubuntu:24.04 AS android-downloader
+
+# https://developer.android.com/studio#command-tools (At the bottom)
+ARG ANDROID_CMD_LINE_TOOLS=linux-13114758_latest
+ARG ANDROID_API_LEVEL=33
+# https://developer.android.com/studio/releases/build-tools
+ARG ANDROID_BUILD_TOOLS_LEVEL=34.0.0
+# https://developer.android.com/ndk/downloads
+# using the latest LTS version
+ARG ANDROID_NDK_VERSION=27.3.13750724
+
+RUN apt-get update && apt-get install -y python3-pip curl unzip
+
+# Download android commandlinetools
+RUN mkdir -p /opt/android
+RUN curl -o /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip -L https://dl.google.com/android/repository/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip 
+RUN unzip -q -d /opt/android/cmdline-tools /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip
+
+# install packages and accept all licenses
+# cmdline-tools/cmdline-tools - the second "cmdline-tools" is the folder in the zip file
+RUN yes Y | /opt/android/cmdline-tools/cmdline-tools/bin/sdkmanager --install "build-tools;${ANDROID_BUILD_TOOLS_LEVEL}" "platforms;android-${ANDROID_API_LEVEL}" "platform-tools" "ndk;${ANDROID_NDK_VERSION}" \
+    && yes Y | /opt/android/cmdline-tools/cmdline-tools/bin/sdkmanager --licenses
+
+
 FROM ubuntu:24.04 AS qt-downloader
 
-RUN apt-get update && apt-get install -y python3-pip wget unzip
+RUN apt-get update && apt-get install -y python3-pip
 
 RUN pip install --break-system-packages aqtinstall
 
@@ -120,16 +138,14 @@ RUN apt-get update && apt-get install -y \
     gdb \
     apksigner
 
-COPY --from=downloader /usr/local/bin/cmake /usr/local/bin/cmake
-COPY --from=downloader /usr/local/share/ /usr/local/share/
-COPY --from=downloader /opt/android/cmdline-tools /opt/android/cmdline-tools
-COPY --from=downloader /opt/gradle /opt/gradle
-COPY --from=downloader /opt/gradlew /opt/gradlew
+COPY --from=buildtools_downloader /usr/local/bin/cmake /usr/local/bin/cmake
+COPY --from=buildtools_downloader /usr/local/share/ /usr/local/share/
+COPY --from=buildtools_downloader /opt/gradle /opt/gradle
+COPY --from=buildtools_downloader /opt/gradlew /opt/gradlew
 
-# install packages and accept all licenses
-# cmdline-tools/cmdline-tools - the second "cmdline-tools" is the folder in the zip file
-RUN yes Y | /opt/android/cmdline-tools/cmdline-tools/bin/sdkmanager --install "build-tools;${ANDROID_BUILD_TOOLS_LEVEL}" "platforms;android-${ANDROID_API_LEVEL}" "platform-tools" "ndk;${ANDROID_NDK_VERSION}" \
-    && yes Y | /opt/android/cmdline-tools/cmdline-tools/bin/sdkmanager --licenses
+COPY --from=qt-downloader /opt/Qt /opt/Qt
+
+COPY --from=android-downloader /opt/android /opt/android
 
 
 ENV GRADLE_HOME=/opt/gradle/gradle-$GRADLE_VERSION
@@ -138,9 +154,7 @@ ENV ANDROID_NDK_HOME=${ANDROID_HOME}/ndk/${ANDROID_NDK_VERSION}
 ENV ANDROID_API_LEVEL=${ANDROID_API_LEVEL}
 
 # overwrite any system installed packages with pip installed packages
-RUN pip install --break-system-packages aqtinstall conan cmake-format
-
-COPY --from=qt-downloader /opt/Qt /opt/Qt
+RUN pip install --break-system-packages conan cmake-format
 
 # the docker image for ubuntu 24.04 comes with a user "ubuntu", we remove it to not break compatibility with earlier versions
 RUN userdel -r ubuntu
