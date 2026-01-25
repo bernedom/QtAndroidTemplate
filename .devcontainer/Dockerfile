@@ -6,10 +6,12 @@ ARG CMAKE_VERSION=3.30.2
 # https://developer.android.com/studio#command-tools (At the bottom)
 ARG ANDROID_CMD_LINE_TOOLS=linux-13114758_latest
 
+ARG GRADLE_VERSION=8.10
+
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
-RUN apt-get update && apt-get install -y curl unzip wget
+RUN apt-get update && apt-get install -y curl unzip wget openjdk-17-jdk 
 
 # install latest cmake
 RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
@@ -21,6 +23,53 @@ RUN mkdir -p /opt/android
 RUN curl -o /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip -L https://dl.google.com/android/repository/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip 
 RUN unzip -q -d /opt/android/cmdline-tools /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip
 
+# Download gradle, install gradle and gradlew
+RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp
+RUN unzip -q -d /opt/gradle /tmp/gradle-${GRADLE_VERSION}-bin.zip
+RUN mkdir /opt/gradlew && touch /opt/gradlew/settings.gradle
+RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper --gradle-version ${GRADLE_VERSION} --distribution-type all -p /opt/gradlew
+RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper -p /opt/gradlew
+
+FROM ubuntu:24.04 AS qt-downloader
+
+RUN apt-get update && apt-get install -y python3-pip wget unzip
+
+RUN pip install --break-system-packages aqtinstall
+
+RUN aqt install-qt \
+    linux android \
+    6.6.1 \
+    android_armv7 \
+    -m qtmultimedia \
+    --autodesktop \
+    --outputdir /opt/Qt 
+
+RUN aqt install-qt \
+    linux android \
+    6.6.1 \
+    android_arm64_v8a\
+    -m qtmultimedia \
+    --autodesktop \
+    --outputdir /opt/Qt 
+
+RUN aqt install-qt \
+    linux android \
+    6.6.1 \
+    android_x86_64\
+    -m qtmultimedia \
+    --autodesktop \
+    --outputdir /opt/Qt 
+
+# Autodesktop does not install all the modules
+# the desktop version needs to be installed explicitly with all modules
+RUN aqt install-qt \
+    linux desktop \
+    6.6.1 \
+    gcc_64\
+    -m qtmultimedia \
+    --outputdir /opt/Qt
+
+
 FROM ubuntu:24.04 AS runner
 
 ARG ANDROID_API_LEVEL=33
@@ -30,9 +79,7 @@ ARG ANDROID_BUILD_TOOLS_LEVEL=34.0.0
 # using the latest LTS version
 ARG ANDROID_NDK_VERSION=27.3.13750724
 
-
 ARG GRADLE_VERSION=8.10
-
 
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
@@ -76,22 +123,14 @@ RUN apt-get update && apt-get install -y \
 COPY --from=downloader /usr/local/bin/cmake /usr/local/bin/cmake
 COPY --from=downloader /usr/local/share/ /usr/local/share/
 COPY --from=downloader /opt/android/cmdline-tools /opt/android/cmdline-tools
-
-
-# Download gradle, install gradle and gradlew
-RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp
-RUN unzip -q -d /opt/gradle /tmp/gradle-${GRADLE_VERSION}-bin.zip
-RUN mkdir /opt/gradlew && touch /opt/gradlew/settings.gradle
-RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper --gradle-version ${GRADLE_VERSION} --distribution-type all -p /opt/gradlew
-RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper -p /opt/gradlew
+COPY --from=downloader /opt/gradle /opt/gradle
+COPY --from=downloader /opt/gradlew /opt/gradlew
 
 # install packages and accept all licenses
 # cmdline-tools/cmdline-tools - the second "cmdline-tools" is the folder in the zip file
 RUN yes Y | /opt/android/cmdline-tools/cmdline-tools/bin/sdkmanager --install "build-tools;${ANDROID_BUILD_TOOLS_LEVEL}" "platforms;android-${ANDROID_API_LEVEL}" "platform-tools" "ndk;${ANDROID_NDK_VERSION}" \
     && yes Y | /opt/android/cmdline-tools/cmdline-tools/bin/sdkmanager --licenses
 
-# Clean up
-RUN rm /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip
 
 ENV GRADLE_HOME=/opt/gradle/gradle-$GRADLE_VERSION
 ENV ANDROID_HOME=/opt/android
@@ -101,39 +140,7 @@ ENV ANDROID_API_LEVEL=${ANDROID_API_LEVEL}
 # overwrite any system installed packages with pip installed packages
 RUN pip install --break-system-packages aqtinstall conan cmake-format
 
-RUN aqt install-qt \
-    linux android \
-    6.6.1 \
-    android_armv7 \
-    -m qtmultimedia \
-    --autodesktop \
-    --outputdir /opt/Qt 
-
-RUN aqt install-qt \
-    linux android \
-    6.6.1 \
-    android_arm64_v8a\
-    -m qtmultimedia \
-    --autodesktop \
-    --outputdir /opt/Qt 
-
-RUN aqt install-qt \
-    linux android \
-    6.6.1 \
-    android_x86_64\
-    -m qtmultimedia \
-    --autodesktop \
-    --outputdir /opt/Qt 
-
-# Autodesktop does not install all the modules
-# the desktop version needs to be installed explicitly with all modules
-RUN aqt install-qt \
-    linux desktop \
-    6.6.1 \
-    gcc_64\
-    -m qtmultimedia \
-    --outputdir /opt/Qt
-
+COPY --from=qt-downloader /opt/Qt /opt/Qt
 
 # the docker image for ubuntu 24.04 comes with a user "ubuntu", we remove it to not break compatibility with earlier versions
 RUN userdel -r ubuntu
