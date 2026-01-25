@@ -117,7 +117,6 @@ RUN apt-get update && apt-get install -y \
     git \
     python3-pip \
     bash-completion \
-    wget \
     ccache \
     libgl1-mesa-dev \
     libxcb-xkb-dev \
@@ -130,7 +129,6 @@ RUN apt-get update && apt-get install -y \
     libxcb-icccm4-dev \
     libwayland-cursor0 \
     libwayland-egl1 \
-    dotnet-sdk-8.0 \
     pulseaudio \
     locales \
     clang-format \
