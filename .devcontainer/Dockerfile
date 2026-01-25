@@ -1,5 +1,4 @@
-
-
+# downloader image for build tools like cmake, gradle and gradlew
 FROM ubuntu:24.04 AS buildtools_downloader 
 
 ARG CMAKE_VERSION=3.30.2
@@ -24,6 +23,7 @@ RUN mkdir /opt/gradlew && touch /opt/gradlew/settings.gradle
 RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper --gradle-version ${GRADLE_VERSION} --distribution-type all -p /opt/gradlew
 RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper -p /opt/gradlew
 
+# downloader image for android sdk, ndk and command line tools
 FROM ubuntu:24.04 AS android-downloader
 
 # https://developer.android.com/studio#command-tools (At the bottom)
@@ -35,7 +35,7 @@ ARG ANDROID_BUILD_TOOLS_LEVEL=34.0.0
 # using the latest LTS version
 ARG ANDROID_NDK_VERSION=27.3.13750724
 
-RUN apt-get update && apt-get install -y python3-pip curl unzip
+RUN apt-get update && apt-get install -y python3-pip curl unzip openjdk-17-jdk 
 
 # Download android commandlinetools
 RUN mkdir -p /opt/android
@@ -47,7 +47,7 @@ RUN unzip -q -d /opt/android/cmdline-tools /tmp/commandlinetools-${ANDROID_CMD_L
 RUN yes Y | /opt/android/cmdline-tools/cmdline-tools/bin/sdkmanager --install "build-tools;${ANDROID_BUILD_TOOLS_LEVEL}" "platforms;android-${ANDROID_API_LEVEL}" "platform-tools" "ndk;${ANDROID_NDK_VERSION}" \
     && yes Y | /opt/android/cmdline-tools/cmdline-tools/bin/sdkmanager --licenses
 
-
+# downloader image for qt using aqtinstall
 FROM ubuntu:24.04 AS qt-downloader
 
 RUN apt-get update && apt-get install -y python3-pip
