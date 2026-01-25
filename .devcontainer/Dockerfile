@@ -135,7 +135,10 @@ RUN apt-get update && apt-get install -y \
     gdb \
     apksigner
 
-COPY --from=buildtools_downloader /cmake_staging/ /usr/local/
+COPY --from=buildtools_downloader /cmake_staging/bin/ /usr/local/bin/
+COPY --from=buildtools_downloader /cmake_staging/share/ /usr/local/share/
+COPY --from=buildtools_downloader /cmake_staging/doc/ /usr/local/doc/
+
 COPY --from=buildtools_downloader /opt/gradle /opt/gradle
 COPY --from=buildtools_downloader /opt/gradlew /opt/gradlew
 
