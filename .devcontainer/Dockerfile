@@ -3,6 +3,8 @@
 FROM ubuntu:24.04 AS downloader 
 
 ARG CMAKE_VERSION=3.30.2
+# https://developer.android.com/studio#command-tools (At the bottom)
+ARG ANDROID_CMD_LINE_TOOLS=linux-13114758_latest
 
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
@@ -14,9 +16,12 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cm
     && chmod +x ./cmake-${CMAKE_VERSION}-linux-x86_64.sh \
     && ./cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/usr/local 
 
+# Download android commandlinetools
+RUN mkdir -p /opt/android
+RUN curl -o /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip -L https://dl.google.com/android/repository/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip 
+RUN unzip -q -d /opt/android/cmdline-tools /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip
 
 FROM ubuntu:24.04 AS runner
-
 
 ARG ANDROID_API_LEVEL=33
 # https://developer.android.com/studio/releases/build-tools
@@ -24,8 +29,7 @@ ARG ANDROID_BUILD_TOOLS_LEVEL=34.0.0
 # https://developer.android.com/ndk/downloads
 # using the latest LTS version
 ARG ANDROID_NDK_VERSION=27.3.13750724
-# https://developer.android.com/studio#command-tools (At the bottom)
-ARG ANDROID_CMD_LINE_TOOLS=linux-13114758_latest
+
 
 ARG GRADLE_VERSION=8.10
 
@@ -71,11 +75,8 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=downloader /usr/local/bin/cmake /usr/local/bin/cmake
 COPY --from=downloader /usr/local/share/ /usr/local/share/
+COPY --from=downloader /opt/android/cmdline-tools /opt/android/cmdline-tools
 
-# Download android commandlinetools
-RUN mkdir -p /opt/android
-RUN curl -o /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip -L https://dl.google.com/android/repository/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip 
-RUN unzip -q -d /opt/android/cmdline-tools /tmp/commandlinetools-${ANDROID_CMD_LINE_TOOLS}.zip
 
 # Download gradle, install gradle and gradlew
 RUN wget -q https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp
