@@ -1,4 +1,22 @@
-FROM ubuntu:24.04
+
+
+FROM ubuntu:24.04 AS downloader 
+
+ARG CMAKE_VERSION=3.30.2
+
+ENV LANGUAGE=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+RUN apt-get update && apt-get install -y curl unzip wget
+
+# install latest cmake
+RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
+    && chmod +x ./cmake-${CMAKE_VERSION}-linux-x86_64.sh \
+    && ./cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/usr/local 
+
+
+FROM ubuntu:24.04 AS runner
+
 
 ARG ANDROID_API_LEVEL=33
 # https://developer.android.com/studio/releases/build-tools
@@ -8,8 +26,10 @@ ARG ANDROID_BUILD_TOOLS_LEVEL=34.0.0
 ARG ANDROID_NDK_VERSION=27.3.13750724
 # https://developer.android.com/studio#command-tools (At the bottom)
 ARG ANDROID_CMD_LINE_TOOLS=linux-13114758_latest
-ARG CMAKE_VERSION=3.30.2
+
 ARG GRADLE_VERSION=8.10
+
+
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
@@ -49,11 +69,8 @@ RUN apt-get update && apt-get install -y \
     gdb \
     apksigner
 
-
-# install latest cmake
-RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
-    && chmod +x ./cmake-${CMAKE_VERSION}-linux-x86_64.sh \
-    && ./cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/usr/local 
+COPY --from=downloader /usr/local/bin/cmake /usr/local/bin/cmake
+COPY --from=downloader /usr/local/share/ /usr/local/share/
 
 # Download android commandlinetools
 RUN mkdir -p /opt/android

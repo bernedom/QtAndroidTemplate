@@ -38,7 +38,7 @@ To build it yourself use docker buildx
 
 ```bash
 cd .devcontainer
-docker buildx build -t bernedom/qtandroidbuilder:dev
+docker buildx build -t bernedom/qtandroidbuilder:dev .
 ```
 
 # Technical Details
