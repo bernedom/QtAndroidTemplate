@@ -11,9 +11,9 @@ ENV LC_ALL=en_US.UTF-8
 RUN apt-get update && apt-get install -y unzip wget openjdk-17-jdk 
 
 # install latest cmake
-RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
+RUN mkdir -p /cmake_staging && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
     && chmod +x ./cmake-${CMAKE_VERSION}-linux-x86_64.sh \
-    && ./cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/cmakebuild/ 
+    && ./cmake-${CMAKE_VERSION}-linux-x86_64.sh --skip-license --prefix=/cmake_staging
 
 
 # Download gradle, install gradle and gradlew
@@ -135,7 +135,7 @@ RUN apt-get update && apt-get install -y \
     gdb \
     apksigner
 
-COPY --from=buildtools_downloader /cmakebuild/ /usr/local/
+COPY --from=buildtools_downloader /cmake_staging/ /usr/local/
 COPY --from=buildtools_downloader /opt/gradle /opt/gradle
 COPY --from=buildtools_downloader /opt/gradlew /opt/gradlew
 
