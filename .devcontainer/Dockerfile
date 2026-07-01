@@ -1,4 +1,6 @@
+# https://cmake.org/download/
 ARG CMAKE_VERSION=4.3.4
+# https://gradle.org/releases/
 ARG GRADLE_VERSION=9.6.1
 ARG QT_VERSION=6.11.1
 # https://developer.android.com/studio#command-tools (At the bottom)
@@ -9,6 +11,7 @@ ARG ANDROID_BUILD_TOOLS_LEVEL=36.0.0
 # https://developer.android.com/ndk/downloads
 # using the latest LTS version
 ARG ANDROID_NDK_VERSION=27.3.13750724
+ARG OPENJDK_VERSION=21
 
 # downloader image for build tools like cmake, gradle and gradlew
 FROM ubuntu:24.04 AS buildtools_downloader
@@ -19,7 +22,7 @@ ARG GRADLE_VERSION
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
-RUN apt-get update && apt-get install -y unzip wget openjdk-17-jdk 
+RUN apt-get update && apt-get install -y unzip wget openjdk-${OPENJDK_VERSION}-jdk 
 
 # install latest cmake
 RUN mkdir -p /cmake_staging && wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh \
@@ -41,8 +44,9 @@ ARG ANDROID_CMD_LINE_TOOLS
 ARG ANDROID_API_LEVEL
 ARG ANDROID_BUILD_TOOLS_LEVEL
 ARG ANDROID_NDK_VERSION
+ARG OPENJDK_VERSION
 
-RUN apt-get update && apt-get install -y python3-pip curl unzip openjdk-17-jdk
+RUN apt-get update && apt-get install -y python3-pip curl unzip openjdk-${OPENJDK_VERSION}-jdk
 
 # Download android commandlinetools
 RUN mkdir -p /opt/android
@@ -116,7 +120,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libssl-dev \
     ninja-build \
-    openjdk-17-jdk \
+    openjdk-${OPENJDK_VERSION}-jdk \
     vim \
     git \
     python3-pip \
