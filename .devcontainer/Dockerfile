@@ -1,7 +1,7 @@
 # https://cmake.org/download/
 ARG CMAKE_VERSION=4.3.4
-# https://gradle.org/releases/
-ARG GRADLE_VERSION=9.6.1
+# https://gradle.org/releases/ - This has to be compatible with the Qt version, see https://doc.qt.io/qt-6/android-building.html#gradle
+ARG GRADLE_VERSION=9.3.1
 ARG QT_VERSION=6.11.1
 # https://developer.android.com/studio#command-tools (At the bottom)
 ARG ANDROID_CMD_LINE_TOOLS=linux-14742923_latest
