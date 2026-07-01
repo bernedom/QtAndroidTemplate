@@ -3,7 +3,8 @@ name: CI
 on:
   push:
     paths-ignore:
-      - '.devcontainer/**'
+      - '.devcontainer/Dockerfile'
+      - '.github/workflows/build-and-push-devcontainer.yml'
       - 'README.md'
   pull_request:
     branches:
