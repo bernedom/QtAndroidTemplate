@@ -5,7 +5,7 @@ ARG GRADLE_VERSION=9.3.1
 ARG QT_VERSION=6.11.1
 # https://developer.android.com/studio#command-tools (At the bottom)
 ARG ANDROID_CMD_LINE_TOOLS=linux-14742923_latest
-ARG ANDROID_API_LEVEL=35
+ARG ANDROID_API_LEVEL=36
 # https://developer.android.com/studio/releases/build-tools
 ARG ANDROID_BUILD_TOOLS_LEVEL=36.0.0
 # https://developer.android.com/ndk/downloads
