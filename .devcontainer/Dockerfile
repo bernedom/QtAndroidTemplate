@@ -27,10 +27,10 @@ RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper -p /opt/gradlew
 FROM ubuntu:24.04 AS android-downloader
 
 # https://developer.android.com/studio#command-tools (At the bottom)
-ARG ANDROID_CMD_LINE_TOOLS=linux-13114758_latest
-ARG ANDROID_API_LEVEL=33
+ARG ANDROID_CMD_LINE_TOOLS=linux-14742923_latest
+ARG ANDROID_API_LEVEL=35
 # https://developer.android.com/studio/releases/build-tools
-ARG ANDROID_BUILD_TOOLS_LEVEL=34.0.0
+ARG ANDROID_BUILD_TOOLS_LEVEL=36.0.0
 # https://developer.android.com/ndk/downloads
 # using the latest LTS version
 ARG ANDROID_NDK_VERSION=27.3.13750724
@@ -90,9 +90,9 @@ RUN aqt install-qt \
 
 FROM ubuntu:24.04 AS runner
 
-ARG ANDROID_API_LEVEL=33
+ARG ANDROID_API_LEVEL=35
 # https://developer.android.com/studio/releases/build-tools
-ARG ANDROID_BUILD_TOOLS_LEVEL=34.0.0
+ARG ANDROID_BUILD_TOOLS_LEVEL=36.0.0
 # https://developer.android.com/ndk/downloads
 # using the latest LTS version
 ARG ANDROID_NDK_VERSION=27.3.13750724
