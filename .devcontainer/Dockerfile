@@ -1,7 +1,7 @@
 # downloader image for build tools like cmake, gradle and gradlew
 FROM ubuntu:24.04 AS buildtools_downloader 
 
-ARG CMAKE_VERSION=3.30.2
+ARG CMAKE_VERSION=4.3.4
 
 ARG GRADLE_VERSION=9.6.1
 
