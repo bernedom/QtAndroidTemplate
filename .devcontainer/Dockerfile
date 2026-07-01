@@ -1,10 +1,20 @@
-# downloader image for build tools like cmake, gradle and gradlew
-FROM ubuntu:24.04 AS buildtools_downloader 
-
 ARG CMAKE_VERSION=4.3.4
-
 ARG GRADLE_VERSION=9.6.1
 ARG QT_VERSION=6.11.1
+# https://developer.android.com/studio#command-tools (At the bottom)
+ARG ANDROID_CMD_LINE_TOOLS=linux-14742923_latest
+ARG ANDROID_API_LEVEL=35
+# https://developer.android.com/studio/releases/build-tools
+ARG ANDROID_BUILD_TOOLS_LEVEL=36.0.0
+# https://developer.android.com/ndk/downloads
+# using the latest LTS version
+ARG ANDROID_NDK_VERSION=27.3.13750724
+
+# downloader image for build tools like cmake, gradle and gradlew
+FROM ubuntu:24.04 AS buildtools_downloader
+
+ARG CMAKE_VERSION
+ARG GRADLE_VERSION
 
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
@@ -27,16 +37,12 @@ RUN /opt/gradle/gradle-${GRADLE_VERSION}/bin/gradle wrapper -p /opt/gradlew
 # downloader image for android sdk, ndk and command line tools
 FROM ubuntu:24.04 AS android-downloader
 
-# https://developer.android.com/studio#command-tools (At the bottom)
-ARG ANDROID_CMD_LINE_TOOLS=linux-14742923_latest
-ARG ANDROID_API_LEVEL=35
-# https://developer.android.com/studio/releases/build-tools
-ARG ANDROID_BUILD_TOOLS_LEVEL=36.0.0
-# https://developer.android.com/ndk/downloads
-# using the latest LTS version
-ARG ANDROID_NDK_VERSION=27.3.13750724
+ARG ANDROID_CMD_LINE_TOOLS
+ARG ANDROID_API_LEVEL
+ARG ANDROID_BUILD_TOOLS_LEVEL
+ARG ANDROID_NDK_VERSION
 
-RUN apt-get update && apt-get install -y python3-pip curl unzip openjdk-17-jdk 
+RUN apt-get update && apt-get install -y python3-pip curl unzip openjdk-17-jdk
 
 # Download android commandlinetools
 RUN mkdir -p /opt/android
@@ -50,6 +56,8 @@ RUN yes Y | /opt/android/cmdline-tools/cmdline-tools/bin/sdkmanager --install "b
 
 # downloader image for qt using aqtinstall
 FROM ubuntu:24.04 AS qt-downloader
+
+ARG QT_VERSION
 
 RUN apt-get update && apt-get install -y python3-pip
 
@@ -91,14 +99,10 @@ RUN aqt install-qt \
 
 FROM ubuntu:24.04 AS runner
 
-ARG ANDROID_API_LEVEL=35
-# https://developer.android.com/studio/releases/build-tools
-ARG ANDROID_BUILD_TOOLS_LEVEL=36.0.0
-# https://developer.android.com/ndk/downloads
-# using the latest LTS version
-ARG ANDROID_NDK_VERSION=27.3.13750724
-
-ARG GRADLE_VERSION=9.6.1
+ARG ANDROID_API_LEVEL
+ARG ANDROID_NDK_VERSION
+ARG GRADLE_VERSION
+ARG QT_VERSION
 
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
@@ -162,8 +166,8 @@ RUN userdel -r ubuntu
 RUN groupadd -r builder && useradd --create-home --gid builder --shell /bin/bash builder && mkdir -p /etc/sudoers.d && echo 'builder ALL=NOPASSWD: ALL' > /etc/sudoers.d/builder
 RUN usermod -aG video builder
 
-# Add /opt/Qt/6.6.1/gcc_64/bin/ to the PATH environment variable in the .profile rc
-RUN echo 'export PATH="/opt/android/cmdline-tools/cmdline-tools:/opt/android/platform-tools:/opt/Qt/6.6.1/gcc_64/bin/:$PATH"' >> /home/builder/.profile
+# Add /opt/Qt/${QT_VERSION}/gcc_64/bin/ to the PATH environment variable in the .profile rc
+RUN echo "export PATH=\"/opt/android/cmdline-tools/cmdline-tools:/opt/android/platform-tools:/opt/Qt/${QT_VERSION}/gcc_64/bin/:\$PATH\"" >> /home/builder/.profile
 
 # Install git shell extension
 RUN curl -L https://raw.github.com/git/git/master/contrib/completion/git-prompt.sh > /home/builder/.bash_git && echo "source ~/.bash_git" >> /home/builder/.bashrc
