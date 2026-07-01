@@ -4,6 +4,7 @@ FROM ubuntu:24.04 AS buildtools_downloader
 ARG CMAKE_VERSION=4.3.4
 
 ARG GRADLE_VERSION=9.6.1
+ARG QT_VERSION=6.11.1
 
 ENV LANGUAGE=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
@@ -56,7 +57,7 @@ RUN pip install --break-system-packages aqtinstall
 
 RUN aqt install-qt \
     linux android \
-    6.6.1 \
+    ${QT_VERSION} \
     android_armv7 \
     -m qtmultimedia \
     --autodesktop \
@@ -64,7 +65,7 @@ RUN aqt install-qt \
 
 RUN aqt install-qt \
     linux android \
-    6.6.1 \
+    ${QT_VERSION} \
     android_arm64_v8a\
     -m qtmultimedia \
     --autodesktop \
@@ -72,7 +73,7 @@ RUN aqt install-qt \
 
 RUN aqt install-qt \
     linux android \
-    6.6.1 \
+    ${QT_VERSION} \
     android_x86_64\
     -m qtmultimedia \
     --autodesktop \
@@ -82,7 +83,7 @@ RUN aqt install-qt \
 # the desktop version needs to be installed explicitly with all modules
 RUN aqt install-qt \
     linux desktop \
-    6.6.1 \
+    ${QT_VERSION} \
     gcc_64\
     -m qtmultimedia \
     --outputdir /opt/Qt

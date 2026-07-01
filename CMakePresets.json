@@ -95,7 +95,7 @@
             "name": "Qt-desktop",
             "hidden": true,
             "cacheVariables": {
-                "CMAKE_PREFIX_PATH": "/opt/Qt/6.6.1/gcc_64/"
+                "CMAKE_PREFIX_PATH": "/opt/Qt/6.11.1/gcc_64/"
             },
             "binaryDir": "${sourceDir}/build"
         },
@@ -103,30 +103,30 @@
             "name": "Qt-android-armeabi-v7a",
             "hidden": true,
             "cacheVariables": {
-                "CMAKE_PREFIX_PATH": "/opt/Qt/6.6.1/android_armv7/"
+                "CMAKE_PREFIX_PATH": "/opt/Qt/6.11.1/android_armv7/"
             },
             "environment": {
-                "QT_HOST_PATH": "/opt/Qt/6.6.1/gcc_64/"
+                "QT_HOST_PATH": "/opt/Qt/6.11.1/gcc_64/"
             }
         },
         {
             "name": "Qt-android-arm64-v8a",
             "hidden": true,
             "cacheVariables": {
-                "CMAKE_PREFIX_PATH": "/opt/Qt/6.6.1/android_arm64_v8a/"
+                "CMAKE_PREFIX_PATH": "/opt/Qt/6.11.1/android_arm64_v8a/"
             },
             "environment": {
-                "QT_HOST_PATH": "/opt/Qt/6.6.1/gcc_64/"
+                "QT_HOST_PATH": "/opt/Qt/6.11.1/gcc_64/"
             }
         },
         {
             "name": "Qt-android-x86_64",
             "hidden": true,
             "cacheVariables": {
-                "CMAKE_PREFIX_PATH": "/opt/Qt/6.6.1/android_x86_64/"
+                "CMAKE_PREFIX_PATH": "/opt/Qt/6.11.1/android_x86_64/"
             },
             "environment": {
-                "QT_HOST_PATH": "/opt/Qt/6.6.1/gcc_64/"
+                "QT_HOST_PATH": "/opt/Qt/6.11.1/gcc_64/"
             }
         },
         {
