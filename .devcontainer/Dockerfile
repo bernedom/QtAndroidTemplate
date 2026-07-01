@@ -96,7 +96,7 @@ RUN aqt install-qt \
 RUN aqt install-qt \
     linux desktop \
     ${QT_VERSION} \
-    gcc_64\
+    linux_gcc_64\
     -m qtmultimedia \
     --outputdir /opt/Qt
 
