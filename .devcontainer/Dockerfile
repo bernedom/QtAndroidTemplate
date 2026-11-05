@@ -144,7 +144,8 @@ RUN apt-get update && apt-get install -y \
     clang-format \
     clangd \
     gdb \
-    apksigner
+    apksigner \
+    reuse
 
 COPY --from=buildtools_downloader /cmake_staging/bin/ /usr/local/bin/
 COPY --from=buildtools_downloader /cmake_staging/share/ /usr/local/share/
